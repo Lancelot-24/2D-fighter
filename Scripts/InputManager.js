@@ -30,7 +30,7 @@ export function InputListeners() {
             case 'w':
                 keys.w.pressed = true
                 if (player.velocity.y == 0) {
-                    player.velocity.y = -14
+                    player.velocity.y = -16
                 }
                 break
             case 'l':

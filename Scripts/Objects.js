@@ -21,17 +21,34 @@ export function GetEntities() {
 
 //sprite base class
 export class Sprite {
-    constructor({ position, width, height, imageSrc }) {
+    constructor({ position, imageSrc, scale = 1, framesMax = 1}) {
         this.position = position
-        this.width = width
-        this.height = height
         this.image = new Image()
         this.image.src = imageSrc   
-        
+        this.scale = scale
+        this.framesMax = framesMax
+        this.frameCurrent = 0
+
+        //aniamtion speed variables and timer
+        this.framesElapsed = 0
+        this.framesHold = 8
     }
     //Called every frame, visual representation of the entity
     draw() {
-        context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        context.drawImage(
+            this.image, 
+            this.frameCurrent * ( this.image.width/ this.framesMax), //the current frame
+            0,
+            this.image.width/ this.framesMax,
+            this.image.height,
+            this.position.x, 
+            this.position.y, 
+
+            this.image.width / this.framesMax * this.scale, 
+            this.image.height * this.scale)
+
+
+        
     }
 
     //Called on initialization
@@ -41,6 +58,18 @@ export class Sprite {
     //Called every frame
     tick() {
         this.draw()
+
+        this.framesElapsed++
+
+        //Go through each sprite frame
+        if(this.framesElapsed % this.framesHold == 0 ){
+            if(this.frameCurrent < this.framesMax - 1)
+                this.frameCurrent++
+            else
+                this.frameCurrent = 0
+        
+        }
+       
         
     }
 
@@ -92,12 +121,12 @@ export class Entity {
     //Called every frame
     tick() {
         this.draw()
-        this.hitbox.position.y = this.position.y
+        this.hitbox.position.y = this.position.y + 35
 
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
 
-        if ((this.position.y + this.height + this.velocity.y) >= canvas.height)
+        if ((this.position.y + this.height + this.velocity.y) >= canvas.height -60)
             this.velocity.y = 0
         else this.velocity.y += gravity
     }

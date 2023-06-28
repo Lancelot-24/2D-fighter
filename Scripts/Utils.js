@@ -3,6 +3,7 @@ import { Entity, PlayerEntity, EnemyEntity, Sprite} from './Objects.js'
 
 let timer = 60
 export let timerId
+
 export function DecreaseTimer(){
     if(timer > 0){
         timerId = setTimeout(DecreaseTimer, 1000)
@@ -76,7 +77,7 @@ export function CreateEntityObject(type, position, velocity) {
     return object
 }
 
-export function CreateSpriteObject(type, position, width, height, imageSrc) {
+export function CreateSpriteObject(type, position, imageSrc, scale, framesMax) {
     let object = null
     switch (type) {
     case Sprite:
@@ -85,9 +86,10 @@ export function CreateSpriteObject(type, position, width, height, imageSrc) {
                 x: position.x,
                 y: position.y
             },
-            width: width,
-            height: height,
-            imageSrc: imageSrc
+            imageSrc: imageSrc,
+            scale: scale,
+            framesMax: framesMax
+
         })
         break
     }
