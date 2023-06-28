@@ -1,2 +1,2 @@
 # 2D fighter
- A 2D fighter written completely in Javascript
+ A low level 2D fighter written in Javascript
