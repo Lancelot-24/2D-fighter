@@ -1,12 +1,14 @@
-import {Entity, PlayerEntity, EnemyEntity, getEntities} from './Entities.js'
-import {InputListeners} from './InputManager.js'
+import { Entity, PlayerEntity, EnemyEntity, getEntities } from './Entities.js'
+import { InputListeners } from './InputManager.js'
+import { DetectAttackCollision } from './CollisionManager.js'
+
 export const canvas = document.querySelector('canvas')
 export const context = canvas.getContext('2d')
 
 canvas.width = 1024
 canvas.height = 576
 
-context.fillRect(0,0, canvas.width, canvas.height)
+context.fillRect(0, 0, canvas.width, canvas.height)
 
 //Entity references
 export let player, enemy
@@ -14,9 +16,9 @@ export let player, enemy
 //Function to spawn entities based on type
 function SpawnEntity(type, position, velocity) {
     let entity = null
-    switch (type){
+    switch (type) {
         case Entity:
-          entity =  new Entity({
+            entity = new Entity({
                 position: {
                     x: position.x,
                     y: position.y
@@ -24,10 +26,11 @@ function SpawnEntity(type, position, velocity) {
                 velocity: {
                     x: velocity.x,
                     y: velocity.y
-                }})
-        break
+                }
+            })
+            break
         case PlayerEntity:
-          entity =  new PlayerEntity({
+            entity = new PlayerEntity({
                 position: {
                     x: position.x,
                     y: position.y
@@ -35,10 +38,11 @@ function SpawnEntity(type, position, velocity) {
                 velocity: {
                     x: velocity.x,
                     y: velocity.y
-                }})
-        break
+                }
+            })
+            break
         case EnemyEntity:
-            entity =  new EnemyEntity({
+            entity = new EnemyEntity({
                 position: {
                     x: position.x,
                     y: position.y
@@ -46,20 +50,21 @@ function SpawnEntity(type, position, velocity) {
                 velocity: {
                     x: velocity.x,
                     y: velocity.y
-                }})
-        break
+                }
+            })
+            break
     }
 
     return entity
 }
 
 //Initialization function
-function Init(){
-    player = SpawnEntity(PlayerEntity, {x: 0, y: 0}, {x: 0, y: 0})
-    enemy = SpawnEntity(EnemyEntity, {x: 500, y: 0}, {x: 0, y: 0})
+function Init() {
+    player = SpawnEntity(PlayerEntity, { x: 0, y: 0 }, { x: 0, y: 0 })
+    enemy = SpawnEntity(EnemyEntity, { x: 500, y: 0 }, { x: 0, y: 0 })
 
-    Object.freeze(player)
-    Object.freeze(enemy)
+    //Object.freeze(player)
+    //Object.freeze(enemy)
 }
 
 //Called every frame
@@ -67,12 +72,14 @@ function Tick() {
     window.requestAnimationFrame(Tick)
     context.fillStyle = 'black'
     context.fillRect(0, 0, canvas.width, canvas.height)
-    
+
     getEntities().forEach(entity => {
         entity.tick()
     });
 
     InputListeners()
+    DetectAttackCollision(player, enemy)
+    DetectAttackCollision(enemy, player)
 
 }
 
