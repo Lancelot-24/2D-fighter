@@ -1,4 +1,4 @@
-import { Entity, PlayerEntity, EnemyEntity, getEntities } from './Entities.js'
+import { PlayerEntity, EnemyEntity } from './Objects.js'
 
 export function DetectAttackCollision(firstEntity, secondEntity) {
 

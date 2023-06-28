@@ -18,6 +18,33 @@ export function getEntities() {
     return entities
 }
 
+//sprite base class
+export class Sprite {
+    constructor({ position, width, height, imageSrc }) {
+        this.position = position
+        this.width = width
+        this.height = height
+        this.image = new Image()
+        this.image.src = imageSrc   
+        
+    }
+    //Called every frame, visual representation of the entity
+    draw() {
+        context.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+    }
+
+    //Called on initialization
+    start() {
+    }
+
+    //Called every frame
+    tick() {
+        this.draw()
+        
+    }
+
+}
+
 //Entity base class
 export class Entity {
     constructor({ position, velocity }) {
