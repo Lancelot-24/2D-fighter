@@ -62,7 +62,10 @@ export class Entity {
     //Called every frame
     tick() {
         this.draw()
-        this.hitbox.position.x = this.position.x
+        if(getEntitySide(this, enemy) == -1)
+            this.hitbox.position.x = this.position.x
+        else
+            this.hitbox.position.x = this.position.x - 50
         this.hitbox.position.y = this.position.y
 
         this.position.x += this.velocity.x
@@ -101,7 +104,6 @@ export class PlayerEntity extends Entity {
     //Called every frame
     tick() {
         super.tick()
-
         this.playerMovement()
 
         if (this.readyToAttack) {
@@ -170,7 +172,11 @@ export class EnemyEntity extends Entity {
     //Called every frame
     tick() {
         super.tick()
-        this.hitbox.position.x = this.position.x - 50
+        if(getEntitySide(this, player) == -1)
+            this.hitbox.position.x = this.position.x
+        else
+            this.hitbox.position.x = this.position.x - 50
+            
         this.actionTimer++
         if (this.actionTimer >= 30) {
             let random = Math.floor(Math.random() * 2)
@@ -220,7 +226,7 @@ export class EnemyEntity extends Entity {
     }
 
     attack(delay) {
-        this.velocity.x = getEntitySide(this) /2
+        this.velocity.x = getEntitySide(this, player) /2
         super.attack(delay)
     }
 
@@ -243,7 +249,7 @@ export class EnemyEntity extends Entity {
     jumpBackwardsBehaviour() {
         //Enemy will jump backwards when in range of the player
         this.velocity.y = -10
-        this.velocity.x = 5 * getEntitySide(this)
+        this.velocity.x = 5 * getEntitySide(this, player)
 
 
     }
@@ -271,9 +277,9 @@ export class EnemyEntity extends Entity {
 
 }
 
-function getEntitySide(entity) {
-    if (entity.position.x > player.position.x)
+function getEntitySide(firstEntity, secondEntity) {
+    if (firstEntity.position.x > secondEntity.position.x)
         return 1
-    else if (entity.position.x < player.position.x)
+    else if (firstEntity.position.x < secondEntity.position.x)
         return -1
 }   
