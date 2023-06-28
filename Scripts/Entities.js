@@ -35,6 +35,7 @@ export class Entity {
         }
         this.isAttacking
         this.hitEntity
+        this.health = 100
 
         this.start()
     }
@@ -110,7 +111,7 @@ export class PlayerEntity extends Entity {
             this.attackDelayTimer++
         }
 
-        if (this.readyToAttack && this.attackDelayTimer >= 90) {
+        if (this.readyToAttack && this.attackDelayTimer >= 30) {
             this.attackDelayTimer = 0
             this.readyToAttack = false
             this.hitEntity = false

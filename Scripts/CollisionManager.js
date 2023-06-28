@@ -9,5 +9,10 @@ export function DetectAttackCollision(firstEntity, secondEntity) {
         && firstEntity.isAttacking && !firstEntity.hitEntity) {
 
         firstEntity.hitEntity = true
+        if(firstEntity instanceof PlayerEntity)
+            document.querySelector('#enemyHealth').style.width = secondEntity.health + '%'
+        else if(firstEntity instanceof EnemyEntity)
+            document.querySelector('#playerHealth').style.width = secondEntity.health  + '%'
+        secondEntity.health -= 10
     }
 }
