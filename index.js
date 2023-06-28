@@ -1,6 +1,7 @@
 import { Entity, PlayerEntity, EnemyEntity, getEntities } from './Scripts/Entities.js'
 import { InputListeners } from './Scripts/InputManager.js'
 import { DetectAttackCollision } from './Scripts/CollisionManager.js'
+import {DecreaseTimer, timerId} from './Scripts/timer.js'
 
 export const canvas = document.querySelector('canvas')
 export const context = canvas.getContext('2d')
@@ -80,8 +81,27 @@ function Tick() {
     InputListeners()
     DetectAttackCollision(player, enemy)
     DetectAttackCollision(enemy, player)
+    
+    if(enemy.health <= 0 || player.health <= 0){
+        GameResult({player, enemy, timerId})
+    }
 
 }
 
+export function GameResult({player, enemy, timerId}){
+    clearTimeout(timerId)
+    document.querySelector('#resultText').style.display = 'flex'
+
+    if(player.health === enemy.health)
+        document.querySelector('#resultText').innerHTML = 'Tie'
+    else if (player.health > enemy.health)
+        document.querySelector('#resultText').innerHTML = 'Win'
+    else
+        document.querySelector('#resultText').innerHTML = 'Lose'
+    
+}
+
+
 Init()
 Tick()
+DecreaseTimer()
