@@ -147,6 +147,7 @@ export class EnemyEntity extends Entity {
         super({ position, velocity })
         this.readyToAttack = false
         this.attackDelayTimer = 0
+        this.actionTimer = 0
     }
     //Called every frame, visual representation of the entity
     draw() {
@@ -170,25 +171,42 @@ export class EnemyEntity extends Entity {
     tick() {
         super.tick()
         this.hitbox.position.x = this.position.x - 50
-        let random = Math.floor(Math.random() * 3)
+        this.actionTimer++
+        if (this.actionTimer >= 30) {
+            let random = Math.floor(Math.random() * 2)
+            this.actionTimer = 0
 
-        switch (random) {
-            case 0:
-                this.movementBehaviour()
-                break
-            case 1:
-                this.delayedJumpBehaviour()
-                break
-            case 2:
-                if (player.position.x <= this.position.x + 75 && player.position.x >= this.position.x - 75) {
-                    //attack and start cooldown
-                    if (!this.readyToAttack) {
-                        this.readyToAttack = true
-                        this.attack(500)
-                    }
+            if (player.position.x <= this.position.x + 75 && player.position.x >= this.position.x - 75) {
+                this.velocity.x = 0
+                switch (random) {
+                    case 0:
+                        this.jumpBackwardsBehaviour()
+                        break
+                    case 1:
+                        if (!this.readyToAttack) {
+                            this.readyToAttack = true
+                            this.attack(500)
+                        }
+                        break
                 }
-                break
+            }
+            else if (player.position.x >= this.position.x + 150
+                || player.position.x <= this.position.x - 150) {
+                this.velocity.x = 0
+                this.movementBehaviour()
+            }
+            else {
+                switch (random) {
+                    case 0:
+                        this.movementBehaviour()
+                        break
+                    case 1:
+                        this.delayedJumpBehaviour()
+                        break
+                }
+            }
         }
+
         //timer for attack cooldown
         if (this.readyToAttack)
             this.attackDelayTimer++
@@ -202,30 +220,42 @@ export class EnemyEntity extends Entity {
     }
 
     attack(delay) {
+        this.velocity.x = getEntitySide(this) /2
         super.attack(delay)
-
     }
 
     //Enemy movement behaviour
     movementBehaviour() {
-        //Enemmy will move towards the player
         if (player.position.x <= this.position.x + 75 && player.position.x >= this.position.x - 75) {
             if (player.position.y <= this.position.y + 50 && player.position.y >= this.position.y - 50)
                 this.velocity.x = 0
+        }
             else
                 this.velocity.x -= acceleration * 5 * Math.sign(this.velocity.x)
-        }
-        else if (player.position.x > this.position.x)
-            this.velocity.x += acceleration / 4
+        //Enemmy will move towards the player
+        if (player.position.x > this.position.x)
+            this.velocity.x += acceleration * 6
         else if (player.position.x < this.position.x)
-            this.velocity.x += acceleration / 4 * -1
+            this.velocity.x += acceleration * 6 * -1
+        
+    }
+
+    jumpBackwardsBehaviour() {
+        //Enemy will jump backwards when in range of the player
+        this.velocity.y = -10
+        this.velocity.x = 5 * getEntitySide(this)
+
+
     }
 
     //Enemy delayed jump behaviour
     delayedJumpBehaviour() {
         //If the player jumps, there is a delay and then the enemy will also jump
-        if (player.position.y < this.position.y && this.velocity.y == 0)
+        if (player.position.y + 10 < this.position.y && this.velocity.y == 0) {
             readyToJump = true
+            console.log(player.position.y + "PLAYER")
+            console.log(this.position.y + "ENEMY")
+        }
 
         //If the enemy is ready to jump, and the delay timer is over, jump
         if (readyToJump && jumpDelayTimer >= 15) {
@@ -240,3 +270,10 @@ export class EnemyEntity extends Entity {
     }
 
 }
+
+function getEntitySide(entity) {
+    if (entity.position.x > player.position.x)
+        return 1
+    else if (entity.position.x < player.position.x)
+        return -1
+}   
