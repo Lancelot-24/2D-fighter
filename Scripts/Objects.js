@@ -21,10 +21,10 @@ export function GetEntities() {
 
 //sprite base class
 export class Sprite {
-    constructor({ position, imageSrc, scale = 1, framesMax = 1}) {
+    constructor({ position, imageSrc, scale = 1, framesMax = 1 }) {
         this.position = position
         this.image = new Image()
-        this.image.src = imageSrc   
+        this.image.src = imageSrc
         this.scale = scale
         this.framesMax = framesMax
         this.frameCurrent = 0
@@ -39,37 +39,37 @@ export class Sprite {
     }
     //Called every frame, visual representation of the entity
     draw() {
-        if(!this.flipSprite){
+        if (!this.flipSprite) {
             context.drawImage(
-                this.image, 
-                this.frameCurrent * ( this.image.width/ this.framesMax), //the current frame
+                this.image,
+                this.frameCurrent * (this.image.width / this.framesMax), //the current frame
                 0,
-                this.image.width/ this.framesMax,
+                this.image.width / this.framesMax,
                 this.image.height,
-                this.position.x, 
-                this.position.y, 
-    
-                this.image.width / this.framesMax * this.scale, 
+                this.position.x,
+                this.position.y,
+
+                this.image.width / this.framesMax * this.scale,
                 this.image.height * this.scale)
         }
-        else{
+        else {
             context.save()
             context.scale(-1, 1)
             context.drawImage(
-                this.image, 
-                this.frameCurrent * ( this.image.width/ this.framesMax), //the current frame
+                this.image,
+                this.frameCurrent * (this.image.width / this.framesMax), //the current frame
                 0,
-                this.image.width/ this.framesMax,
+                this.image.width / this.framesMax,
                 this.image.height,
-                -this.position.x - this.image.width / this.framesMax * this.scale, 
-                this.position.y, 
-    
-                this.image.width / this.framesMax * this.scale, 
+                -this.position.x - this.image.width / this.framesMax * this.scale,
+                this.position.y,
+
+                this.image.width / this.framesMax * this.scale,
                 this.image.height * this.scale)
             context.restore()
         }
-       
-        
+
+
     }
 
     //Called on initialization
@@ -83,15 +83,15 @@ export class Sprite {
         this.framesElapsed++
 
         //Go through each sprite frame
-        if(this.framesElapsed % this.framesHold == 0 && !this.dontAnimate){
-            if(this.frameCurrent < this.framesMax - 1)
+        if (this.framesElapsed % this.framesHold == 0 && !this.dontAnimate) {
+            if (this.frameCurrent < this.framesMax - 1)
                 this.frameCurrent++
             else
                 this.frameCurrent = 0
-        
+
         }
-       
-        
+
+
     }
 
 }
@@ -114,8 +114,8 @@ export class Entity {
         this.isAttacking
         this.hitEntity
         this.health = 100
-        this.hitDirOffset = 0
-        
+        //this.hitDirOffset = 0
+
         this.spritesArr = sprites
         this.spriteOffset = {
             x: spriteOffset.x,
@@ -154,7 +154,7 @@ export class Entity {
                 this.hitbox.height)
         }
 
-        
+
     }
 
     //Called on initialization
@@ -166,18 +166,18 @@ export class Entity {
     //Called every frame
     tick() {
         this.draw()
-        this.hitbox.position.y = this.position.y + 5
+        //this.hitbox.position.y = this.position.y + 5
 
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
 
-        if ((this.position.y + this.height + this.velocity.y) >= canvas.height -60){
+        if ((this.position.y + this.height + this.velocity.y) >= canvas.height - 60) {
             this.velocity.y = 0
-            if(!this.isMoving && !this.isJumping && !this.readyToAttack)
+            if (!this.isMoving && !this.isJumping && !this.readyToAttack)
                 this.state = 0
             this.isJumping = false
         }
-            
+
         else this.velocity.y += gravity
     }
 
@@ -194,7 +194,7 @@ export class Entity {
 export class PlayerEntity extends Entity {
     constructor({ position, velocity, sprites, spriteOffset }) {
         super({ position, velocity, sprites, spriteOffset })
-        
+        this.hitDirOffset = 0
     }
     //Called every frame, visual representation of the entity
     draw() {
@@ -207,16 +207,17 @@ export class PlayerEntity extends Entity {
 
     //Called every frame
     tick() {
-        if(this.health > 0){
+        if (this.health > 0) {
             super.tick()
             this.playerMovement()
 
             this.hitbox.position.x = this.position.x - this.hitDirOffset
+            this.hitbox.position.y = this.position.y + 25
 
             if (this.readyToAttack) {
                 this.attackDelayTimer++
 
-                if(this.attackDelayTimer == 18)
+                if (this.attackDelayTimer == 18)
                     this.attack(300)
             }
 
@@ -225,15 +226,21 @@ export class PlayerEntity extends Entity {
                 this.readyToAttack = false
                 this.hitEntity = false
             }
-        }else{
+        } else {
+            this.state = 5
+            this.position.y += this.velocity.y
             this.spritesArr[this.state].position.x = this.position.x - this.spriteOffset.x
             this.spritesArr[this.state].position.y = this.position.y - this.spriteOffset.y
             this.spritesArr[this.state].tick()
-            if(this.spritesArr[this.state].frameCurrent == this.spritesArr[this.state].framesMax - 1){
+            if (this.spritesArr[this.state].frameCurrent == this.spritesArr[this.state].framesMax - 1) {
                 this.spritesArr[this.state].dontAnimate = true
-                this.spritesArr[this.state].frameCurrent =  this.spritesArr[this.state].framesMax -1
+                this.spritesArr[this.state].frameCurrent = this.spritesArr[this.state].framesMax - 1
             }
-                
+            if ((this.position.y + this.height + this.velocity.y) >= canvas.height - 60) 
+                this.velocity.y = 0
+            else 
+                this.velocity.y += gravity
+
         }
 
     }
@@ -250,29 +257,28 @@ export class PlayerEntity extends Entity {
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             else if ((this.velocity.x < 0.5 || this.velocity.x > -0.5))
                 this.velocity.x = 0
-                this.isMoving = false
+            this.isMoving = false
         }
-        console.log(this.velocity.y)
         if (keys.a.pressed && lastKey == 'a' && this.velocity.x > -maxVelocity) {
             this.isMoving = true
             if (this.velocity.x > 1)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             this.velocity.x += acceleration * -1
-            this.hitDirOffset = 50
-            
+            this.hitDirOffset = 75
+
         }
         else if (keys.d.pressed && lastKey == 'd' && this.velocity.x < maxVelocity) {
             this.isMoving = true
             if (this.velocity.x < -1)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             this.velocity.x += acceleration
-            this.hitDirOffset = 0
+            this.hitDirOffset = -25
         }
 
-        if(!this.readyToAttack && this.velocity.y == 0 && this.isMoving)
-                this.state = 1
-            for(let i = 0; i < this.spritesArr.length; i++)
-                this.spritesArr[i].flipSprite = lastKey == 'a' ? true : false
+        if (!this.readyToAttack && this.velocity.y == 0 && this.isMoving)
+            this.state = 1
+        for (let i = 0; i < this.spritesArr.length; i++)
+            this.spritesArr[i].flipSprite = lastKey == 'a' ? true : false
     }
 }
 
@@ -284,6 +290,7 @@ export class EnemyEntity extends Entity {
         this.attackDelayTimer = 0
         this.actionTimer = 0
         this.backwardJumped
+        this.hitbox.width = 50
     }
     //Called every frame, visual representation of the entity
     draw() {
@@ -301,78 +308,92 @@ export class EnemyEntity extends Entity {
     //Called on initialization
     start() {
         super.start()
+        this.hitDirOffset = 150
     }
 
     //Called every frame
     tick() {
-        super.tick()
-        if (GetEntitySide(this, player) == -1)
-            this.hitbox.position.x = this.position.x
-        else
-            this.hitbox.position.x = this.position.x - 50
+        if (this.health > 0) {
+            super.tick()
+            this.actionTimer++
 
-        this.actionTimer++
 
-        //Delay timer for enemy actions
-        if (this.actionTimer >= 30) {
-            let random = Math.floor(Math.random() * 2)
-            this.actionTimer = 0
+            if (this.velocity.y == 0 && !this.isMoving && !this.readyToAttack)
+                this.state = 0
+            //Delay timer for enemy actions
+            if (this.actionTimer >= 30) {
+                let random = Math.floor(Math.random() * 2)
+                this.actionTimer = 0
 
-            //If player is within range either attack or jump backwards
-            if (player.position.x <= this.position.x + 75 && player.position.x >= this.position.x - 75) {
-                this.velocity.x = 0
-                switch (random) {
-                    case 0:
-                        this.jumpBackwardsBehaviour()
-                        break
-                    case 1:
-                        if (!this.readyToAttack) {
-                            this.readyToAttack = true
-                            this.attack(500)
-                        }
-                        break
-                }
-            }
-            //if player is outside of attack range move towards player and jump when they jump
-            else if (player.position.x >= this.position.x + 150
-                || player.position.x <= this.position.x - 150) {
-                if (this.backwardJumped) {
+                //If player is within range either attack or jump backwards
+                if (player.position.x <= this.position.x + 200 && player.position.x >= this.position.x - 200) {
                     this.velocity.x = 0
-                    this.backwardJumped = false
+                    if (!this.readyToAttack)
+                        this.state = 0
+                    switch (random) {
+                        case 0:
+                            if (!this.readyToAttack)
+                                this.jumpBackwardsBehaviour()
+                            break
+                        case 1:
+                            if (!this.readyToAttack) {
+                                this.readyToAttack = true
+                                this.spritesArr[3].frameCurrent = 0
+                                this.state = 3
+                            }
+                            break
+                    }
                 }
-                else
-                    this.velocity.x -= acceleration * 5 * Math.sign(this.velocity.x)//this.velocity.x = 0
-                switch (random) {
-                    case 0:
-                        this.movementBehaviour()
-                        break
-                    case 1:
-                        this.delayedJumpBehaviour()
-                        break
+                //if player is outside of attack range move towards player and jump when they jump
+                else {
+                    if (this.backwardJumped) {
+                        this.backwardJumped = false
+                        this.velocity.x = 0
+                        this.state = 0
+                    }
+                    switch (random) {
+                        case 0:
+                            this.movementBehaviour()
+                            break
+                        case 1:
+                            this.delayedJumpBehaviour()
+                            break
+                    }
+
                 }
             }
-            else {
-                switch (random) {
-                    case 0:
-                        this.movementBehaviour()
-                        break
-                    case 1:
-                        this.delayedJumpBehaviour()
-                        break
-                }
+
+            //timer for attack cooldown
+            if (this.readyToAttack) {
+                if (this.attackDelayTimer == 15)
+                    this.attack(150)
+                this.attackDelayTimer++
+            }
+
+
+            //reset attack cooldown  
+            if (this.readyToAttack && this.attackDelayTimer >= 55) {
+                this.state = 0
+                this.hitEntity = false
+                this.attackDelayTimer = 0
+                this.readyToAttack = false
+            }
+
+            this.hitbox.position.y = this.position.y
+            if (player.velocity.y == 0)
+                this.hitbox.position.x = this.position.x - 175 *GetEntitySide(this, player)
+        }
+        else{
+            this.state = 5
+            this.spritesArr[this.state].position.x = this.position.x - this.spriteOffset.x
+            this.spritesArr[this.state].position.y = this.position.y - this.spriteOffset.y
+            this.spritesArr[this.state].tick()
+            if (this.spritesArr[this.state].frameCurrent == this.spritesArr[this.state].framesMax - 1) {
+                this.spritesArr[this.state].dontAnimate = true
+                this.spritesArr[this.state].frameCurrent = this.spritesArr[this.state].framesMax - 1
             }
         }
 
-        //timer for attack cooldown
-        if (this.readyToAttack)
-            this.attackDelayTimer++
-
-        //reset attack cooldown  
-        if (this.readyToAttack && this.attackDelayTimer >= 90) {
-            this.hitEntity = false
-            this.attackDelayTimer = 0
-            this.readyToAttack = false
-        }
     }
 
     attack(delay) {
@@ -382,18 +403,29 @@ export class EnemyEntity extends Entity {
 
     //Enemy movement behaviour
     movementBehaviour() {
-        if (player.position.x <= this.position.x + 75 && player.position.x >= this.position.x - 75) {
-            if (player.position.y <= this.position.y + 50 && player.position.y >= this.position.y - 50)
-                this.velocity.x = 0
+        if (player.position.x <= this.position.x + 150 && player.position.x >= this.position.x - 150 && !this.readyToAttack) {
+            this.velocity.x = 0
+            this.state = 0
+            this.isMoving = false
         }
         else
             this.velocity.x -= acceleration * 5 * Math.sign(this.velocity.x)
-        //Enemmy will move towards the player
-        if (player.position.x > this.position.x)
-            this.velocity.x += acceleration * 12
-        else if (player.position.x < this.position.x)
-            this.velocity.x += acceleration * 12 * -1
 
+        //Enemmy will move towards the player
+        if (player.position.x > this.position.x) {
+            this.velocity.x += acceleration * 12
+            this.isMoving = true
+        }
+        else if (player.position.x < this.position.x) {
+            this.velocity.x += acceleration * 12 * -1
+            this.isMoving = true
+        }
+
+        //Play move animation
+        this.state = 1
+
+        for (let i = 0; i < this.spritesArr.length; i++)
+            this.spritesArr[i].flipSprite = this.velocity.x < 0 ? true : false
     }
 
     jumpBackwardsBehaviour() {
@@ -403,6 +435,9 @@ export class EnemyEntity extends Entity {
         this.velocity.x = 5 * GetEntitySide(this, player)
         this.backwardJumped = true
 
+        //jump animation
+        this.state = 2
+
 
     }
 
@@ -411,6 +446,8 @@ export class EnemyEntity extends Entity {
         //If the enemy hasn't jumped, jump
         if (!readyToJump) {
             this.velocity.y = -14
+            //jump animation
+            this.state = 2
             readyToJump = true
         }
 

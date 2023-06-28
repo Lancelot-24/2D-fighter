@@ -24,7 +24,12 @@ export const player = Utils.CreateEntityObject(PlayerEntity, { x: 0, y: 0 }, { x
     { x: 157, y: 125 })
 
 export const enemy = Utils.CreateEntityObject(EnemyEntity, { x: 500, y: 0 }, { x: 0, y: 0 }, 
-    [Utils.CreateSpriteObject(Sprite, { x: 0, y: 0 }, './Assets/Characters/Enemy/Idle.png', 2, 8) ],
+    [Utils.CreateSpriteObject(Sprite, { x: 0, y: 0 }, './Assets/Characters/Enemy/Idle.png', 2, 8),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Enemy/Run.png', 2, 8),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Enemy/Jump.png', 2, 2),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Enemy/Attack1.png', 2, 8),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Enemy/Take Hit.png', 2, 3),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Enemy/Death.png', 2, 7)],
      { x: 220, y: 225 })
 
 //background reference

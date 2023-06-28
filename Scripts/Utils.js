@@ -28,7 +28,6 @@ export function GameResult({ player, enemy, timerId }) {
         document.querySelector('#resultText').innerHTML = 'Win'
     else{
         document.querySelector('#resultText').innerHTML = 'Lose'
-        player.state = 5
     }
         
 
