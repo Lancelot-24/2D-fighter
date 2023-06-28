@@ -1,5 +1,6 @@
 import { context, canvas, player, enemy } from '../index.js'
 import { keys, lastKey } from './InputManager.js'
+import { GetEntitySide } from './Utils.js'
 //world Constants
 const gravity = 0.6
 const acceleration = 0.1
@@ -14,7 +15,7 @@ var readyToJump = false
 var entities = []
 
 //Get entities
-export function getEntities() {
+export function GetEntities() {
     return entities
 }
 
@@ -202,7 +203,7 @@ export class EnemyEntity extends Entity {
     //Called every frame
     tick() {
         super.tick()
-        if (getEntitySide(this, player) == -1)
+        if (GetEntitySide(this, player) == -1)
             this.hitbox.position.x = this.position.x
         else
             this.hitbox.position.x = this.position.x - 50
@@ -296,7 +297,7 @@ export class EnemyEntity extends Entity {
         //Enemy will jump backwards when in range of the player
         this.velocity.x = 0
         this.velocity.y = -10
-        this.velocity.x = 5 * getEntitySide(this, player)
+        this.velocity.x = 5 * GetEntitySide(this, player)
         this.backwardJumped = true
 
 
@@ -323,9 +324,3 @@ export class EnemyEntity extends Entity {
 
 }
 
-function getEntitySide(firstEntity, secondEntity) {
-    if (firstEntity.position.x > secondEntity.position.x)
-        return 1
-    else if (firstEntity.position.x < secondEntity.position.x)
-        return -1
-}   
