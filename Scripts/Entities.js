@@ -36,6 +36,7 @@ export class Entity {
         this.isAttacking
         this.hitEntity
         this.health = 100
+        this.hitDirOffset = 0
 
         this.start()
     }
@@ -63,10 +64,6 @@ export class Entity {
     //Called every frame
     tick() {
         this.draw()
-        if (getEntitySide(this, enemy) == -1)
-            this.hitbox.position.x = this.position.x
-        else
-            this.hitbox.position.x = this.position.x - 50
         this.hitbox.position.y = this.position.y
 
         this.position.x += this.velocity.x
@@ -107,6 +104,8 @@ export class PlayerEntity extends Entity {
         super.tick()
         this.playerMovement()
 
+        this.hitbox.position.x = this.position.x - this.hitDirOffset
+
         if (this.readyToAttack) {
             this.attackDelayTimer++
         }
@@ -135,11 +134,13 @@ export class PlayerEntity extends Entity {
             if (this.velocity.x > 1)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             this.velocity.x += acceleration * -1
+            this.hitDirOffset = 50
         }
         else if (keys.d.pressed && lastKey == 'd' && this.velocity.x < maxVelocity) {
             if (this.velocity.x < -1)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             this.velocity.x += acceleration
+            this.hitDirOffset = 0
         }
     }
 }
