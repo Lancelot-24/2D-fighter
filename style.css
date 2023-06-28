@@ -1,0 +1,29 @@
+.healthBar {
+    background-color: yellow;
+    height: 50px;
+    width: 100%;
+}
+
+.timer {
+    background-color: red;
+    height: 100px;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.container {
+    position: absolute; 
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.canvas {
+    position: relative;
+    display: inline-block;
+}
+
+* {
+    box-sizing: border-box;
+}

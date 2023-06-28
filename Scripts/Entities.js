@@ -1,4 +1,4 @@
-import { context, canvas, player, enemy } from './index.js'
+import { context, canvas, player, enemy } from '../index.js'
 import { keys, lastKey } from './InputManager.js'
 //world Constants
 const gravity = 0.6
@@ -62,7 +62,7 @@ export class Entity {
     //Called every frame
     tick() {
         this.draw()
-        if(getEntitySide(this, enemy) == -1)
+        if (getEntitySide(this, enemy) == -1)
             this.hitbox.position.x = this.position.x
         else
             this.hitbox.position.x = this.position.x - 50
@@ -150,6 +150,7 @@ export class EnemyEntity extends Entity {
         this.readyToAttack = false
         this.attackDelayTimer = 0
         this.actionTimer = 0
+        this.backwardJumped
     }
     //Called every frame, visual representation of the entity
     draw() {
@@ -172,16 +173,19 @@ export class EnemyEntity extends Entity {
     //Called every frame
     tick() {
         super.tick()
-        if(getEntitySide(this, player) == -1)
+        if (getEntitySide(this, player) == -1)
             this.hitbox.position.x = this.position.x
         else
             this.hitbox.position.x = this.position.x - 50
-            
+
         this.actionTimer++
+
+        //Delay timer for enemy actions
         if (this.actionTimer >= 30) {
             let random = Math.floor(Math.random() * 2)
             this.actionTimer = 0
 
+            //If player is within range either attack or jump backwards
             if (player.position.x <= this.position.x + 75 && player.position.x >= this.position.x - 75) {
                 this.velocity.x = 0
                 switch (random) {
@@ -196,10 +200,23 @@ export class EnemyEntity extends Entity {
                         break
                 }
             }
+            //if player is outside of attack range move towards player and jump when they jump
             else if (player.position.x >= this.position.x + 150
                 || player.position.x <= this.position.x - 150) {
-                this.velocity.x = 0
-                this.movementBehaviour()
+                if (this.backwardJumped) {
+                    this.velocity.x = 0
+                    this.backwardJumped = false
+                }
+                else
+                    this.velocity.x -= acceleration * 5 * Math.sign(this.velocity.x)//this.velocity.x = 0
+                switch (random) {
+                    case 0:
+                        this.movementBehaviour()
+                        break
+                    case 1:
+                        this.delayedJumpBehaviour()
+                        break
+                }
             }
             else {
                 switch (random) {
@@ -226,7 +243,7 @@ export class EnemyEntity extends Entity {
     }
 
     attack(delay) {
-        this.velocity.x = getEntitySide(this, player) /2
+        this.velocity.x = 0
         super.attack(delay)
     }
 
@@ -236,38 +253,38 @@ export class EnemyEntity extends Entity {
             if (player.position.y <= this.position.y + 50 && player.position.y >= this.position.y - 50)
                 this.velocity.x = 0
         }
-            else
-                this.velocity.x -= acceleration * 5 * Math.sign(this.velocity.x)
+        else
+            this.velocity.x -= acceleration * 5 * Math.sign(this.velocity.x)
         //Enemmy will move towards the player
         if (player.position.x > this.position.x)
-            this.velocity.x += acceleration * 6
+            this.velocity.x += acceleration * 12
         else if (player.position.x < this.position.x)
-            this.velocity.x += acceleration * 6 * -1
-        
+            this.velocity.x += acceleration * 12 * -1
+
     }
 
     jumpBackwardsBehaviour() {
         //Enemy will jump backwards when in range of the player
+        this.velocity.x = 0
         this.velocity.y = -10
         this.velocity.x = 5 * getEntitySide(this, player)
+        this.backwardJumped = true
 
 
     }
 
     //Enemy delayed jump behaviour
     delayedJumpBehaviour() {
-        //If the player jumps, there is a delay and then the enemy will also jump
-        if (player.position.y + 10 < this.position.y && this.velocity.y == 0) {
+        //If the enemy hasn't jumped, jump
+        if (!readyToJump) {
+            this.velocity.y = -14
             readyToJump = true
-            console.log(player.position.y + "PLAYER")
-            console.log(this.position.y + "ENEMY")
         }
 
-        //If the enemy is ready to jump, and the delay timer is over, jump
+        //if delay is over, reset the delay timer
         if (readyToJump && jumpDelayTimer >= 15) {
             jumpDelayTimer = 0
             readyToJump = false
-            this.velocity.y = -14
         }
 
         //tick the delay timer

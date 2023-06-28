@@ -1,4 +1,4 @@
-import { player } from './index.js'
+import { player } from '../index.js'
 
 //Player input keys
 export const keys = {

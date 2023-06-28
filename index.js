@@ -1,6 +1,6 @@
-import { Entity, PlayerEntity, EnemyEntity, getEntities } from './Entities.js'
-import { InputListeners } from './InputManager.js'
-import { DetectAttackCollision } from './CollisionManager.js'
+import { Entity, PlayerEntity, EnemyEntity, getEntities } from './Scripts/Entities.js'
+import { InputListeners } from './Scripts/InputManager.js'
+import { DetectAttackCollision } from './Scripts/CollisionManager.js'
 
 export const canvas = document.querySelector('canvas')
 export const context = canvas.getContext('2d')
