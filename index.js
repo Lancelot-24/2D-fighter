@@ -13,8 +13,19 @@ canvas.height = 576
 context.fillRect(0, 0, canvas.width, canvas.height)
 
 //Entity references
-export const player = Utils.CreateEntityObject(PlayerEntity, { x: 0, y: 0 }, { x: 0, y: 0 })
-export const enemy = Utils.CreateEntityObject(EnemyEntity, { x: 500, y: 0 }, { x: 0, y: 0 })
+export const player = Utils.CreateEntityObject(PlayerEntity, { x: 0, y: 0 }, { x: 0, y: 0 }, 
+    [Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Player/Idle.png', 2, 11),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Player/Run.png', 2, 8),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Player/Jump.png', 2, 3),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Player/Attack1.png', 2, 7),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Player/Take Hit.png', 2, 4),
+    Utils.CreateSpriteObject(Sprite, { x: 50, y: 0 }, './Assets/Characters/Player/Death.png', 2, 11)
+], 
+    { x: 157, y: 125 })
+
+export const enemy = Utils.CreateEntityObject(EnemyEntity, { x: 500, y: 0 }, { x: 0, y: 0 }, 
+    [Utils.CreateSpriteObject(Sprite, { x: 0, y: 0 }, './Assets/Characters/Enemy/Idle.png', 2, 8) ],
+     { x: 220, y: 225 })
 
 //background reference
 export const background = Utils.CreateSpriteObject(Sprite, { x: 0, y: 0 }, './Assets/Backgrounds/image without mist.png', 1.6525, 1) 

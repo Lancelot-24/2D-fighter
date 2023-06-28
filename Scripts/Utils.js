@@ -26,13 +26,16 @@ export function GameResult({ player, enemy, timerId }) {
         document.querySelector('#resultText').innerHTML = 'Tie'
     else if (player.health > enemy.health)
         document.querySelector('#resultText').innerHTML = 'Win'
-    else
+    else{
         document.querySelector('#resultText').innerHTML = 'Lose'
+        player.state = 5
+    }
+        
 
 }
 
 //Function to spawn entities based on type
-export function CreateEntityObject(type, position, velocity) {
+export function CreateEntityObject(type, position, velocity, sprites, spriteOffset) {
     let object = null
     switch (type) {
         case Entity:
@@ -44,6 +47,11 @@ export function CreateEntityObject(type, position, velocity) {
                 velocity: {
                     x: velocity.x,
                     y: velocity.y
+                },
+                sprites: sprites,
+                spriteOffset: {
+                    x: spriteOffset.x,
+                    y: spriteOffset.y
                 }
             })
             break
@@ -56,6 +64,11 @@ export function CreateEntityObject(type, position, velocity) {
                 velocity: {
                     x: velocity.x,
                     y: velocity.y
+                },
+                sprites: sprites,
+                spriteOffset: {
+                    x: spriteOffset.x,
+                    y: spriteOffset.y
                 }
             })
             break
@@ -68,6 +81,11 @@ export function CreateEntityObject(type, position, velocity) {
                 velocity: {
                     x: velocity.x,
                     y: velocity.y
+                },
+                sprites: sprites,
+                spriteOffset: {
+                    x: spriteOffset.x,
+                    y: spriteOffset.y
                 }
             })
             break
