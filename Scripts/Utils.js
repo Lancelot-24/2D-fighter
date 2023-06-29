@@ -12,11 +12,7 @@ export function DecreaseTimer() {
     }
     else
         GameResult({ player, enemy, timerId })
-
-
 }
-
-
 
 export function GameResult({ player, enemy, timerId }) {
     clearTimeout(timerId)
