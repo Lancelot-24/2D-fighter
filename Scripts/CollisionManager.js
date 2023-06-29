@@ -18,9 +18,9 @@ export function DetectAttackCollision(firstEntity, secondEntity) {
         //decrease the second entity health
         secondEntity.health -= 10
         if (firstEntity instanceof PlayerEntity)
-            document.querySelector('#enemyHealth').style.width = secondEntity.health + '%'
+            gsap.to('#enemyHealth', {width: secondEntity.health + '%'})
         else if (firstEntity instanceof EnemyEntity)
-            document.querySelector('#playerHealth').style.width = secondEntity.health + '%'
+            gsap.to('#playerHealth', {width: secondEntity.health + '%'})
         return true
 
     }

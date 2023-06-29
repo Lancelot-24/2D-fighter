@@ -46,6 +46,10 @@ function Tick() {
     context.fillRect(0, 0, canvas.width, canvas.height)
     background.tick()
     shop.tick()
+
+    context.fillStyle = 'rgba(0, 0, 0, 0.15)'
+    context.fillRect(0,0, canvas.width, canvas.height)
+
     GetEntities().forEach(entity => {
         entity.tick()
     });
