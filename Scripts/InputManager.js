@@ -19,16 +19,16 @@ export let lastKey
 export function InputListeners() {
     window.addEventListener('keydown', (event) => {
         if (player.health > 0) {
-            switch (event.key) {
-                case 'a':
+            switch (event.keyCode) {
+                case 65:
                     keys.a.pressed = true
                     lastKey = 'a'
                     break
-                case 'd':
+                case 68:
                     keys.d.pressed = true
                     lastKey = 'd'
                     break
-                case 'w':
+                case 87:
                     keys.w.pressed = true
                     if (player.velocity.y == 0) {
                         player.state = 2
@@ -36,7 +36,7 @@ export function InputListeners() {
                         player.isJumping = true
                     }
                     break
-                case 'l':
+                case 76:
                     if (!player.readyToAttack) {
                         player.state = 3
                         player.readyToAttack = true
@@ -48,14 +48,14 @@ export function InputListeners() {
 
     })
     window.addEventListener('keyup', (event) => {
-        switch (event.key) {
-            case 'a':
+        switch (event.keyCode) {
+            case 65:
                 keys.a.pressed = false
                 break
-            case 'd':
+            case 68:
                 keys.d.pressed = false
                 break
-            case 'w':
+            case 87:
                 keys.w.pressed = false
                 break
         }
