@@ -18,7 +18,7 @@ export let lastKey
 //input listeners
 export function InputListeners() {
     window.addEventListener('keydown', (event) => {
-        if(player.health > 0){
+        if (player.health > 0) {
             switch (event.key) {
                 case 'a':
                     keys.a.pressed = true
@@ -40,7 +40,7 @@ export function InputListeners() {
                     if (!player.readyToAttack) {
                         player.state = 3
                         player.readyToAttack = true
-                       
+
                     }
                     break
             }

@@ -108,12 +108,14 @@ export class Entity {
                 x: this.position.x,
                 y: this.position.y
             },
-            width: 100,
+            width: 50,
             height: 50
         }
         this.isAttacking
         this.hitEntity
         this.health = 100
+        
+        this.hitboxVelocity = 0
         //this.hitDirOffset = 0
 
         this.spritesArr = sprites
@@ -134,25 +136,28 @@ export class Entity {
         this.isJumping = false
         this.readyToAttack = false
         this.attackDelayTimer = 0
+        this.gotHit = false;
+        this.gotHitTimer = 0;
         this.start()
     }
     //Called every frame, visual representation of the entity
     draw() {
-        context.fillStyle = 'red'
-        context.fillRect(this.position.x, this.position.y, this.width, this.height)
+        //Entity reciever hitbox 
+        //context.fillStyle = 'red'
+        //context.fillRect(this.position.x, this.position.y, this.width, this.height)
         this.spritesArr[this.state].position.x = this.position.x - this.spriteOffset.x
         this.spritesArr[this.state].position.y = this.position.y - this.spriteOffset.y
         this.spritesArr[this.state].tick()
 
-        if (this.isAttacking) {
-            //hitbox
-            context.fillStyle = 'blue'
-            context.fillRect(
-                this.hitbox.position.x,
-                this.hitbox.position.y,
-                this.hitbox.width,
-                this.hitbox.height)
-        }
+        //entity output hitbox
+         //if (this.isAttacking) {
+            /* context.fillStyle = 'blue'
+             context.fillRect(
+                 this.hitbox.position.x,
+                 this.hitbox.position.y,
+                 this.hitbox.width,
+                 this.hitbox.height)*/
+       //  }
 
 
     }
@@ -173,12 +178,19 @@ export class Entity {
 
         if ((this.position.y + this.height + this.velocity.y) >= canvas.height - 60) {
             this.velocity.y = 0
-            if (!this.isMoving && !this.isJumping && !this.readyToAttack)
+            if (!this.isMoving && !this.isJumping && !this.readyToAttack && !this.gotHit)
                 this.state = 0
             this.isJumping = false
         }
-
         else this.velocity.y += gravity
+
+        if(this.gotHit){
+            this.gotHitTimer++
+            if(this.gotHitTimer >= 40){
+                this.gotHit = false
+                this.gotHitTimer = 0
+            }
+        }
     }
 
     //Attack logic
@@ -211,14 +223,21 @@ export class PlayerEntity extends Entity {
             super.tick()
             this.playerMovement()
 
-            this.hitbox.position.x = this.position.x - this.hitDirOffset
+            this.hitbox.position.x = this.position.x - this.hitboxVelocity *this.hitDirOffset
             this.hitbox.position.y = this.position.y + 25
 
+            //Attack logic
             if (this.readyToAttack) {
                 this.attackDelayTimer++
 
-                if (this.attackDelayTimer == 18)
+                if (this.attackDelayTimer >= 15 && this.attackDelayTimer <= 50) {
+                    this.hitboxVelocity+= 2;
                     this.attack(300)
+                }
+                if (this.attackDelayTimer >= 50) {
+                    this.hitboxVelocity = 0;
+                }
+                   
             }
 
             if (this.readyToAttack && this.attackDelayTimer >= 55) {
@@ -226,7 +245,7 @@ export class PlayerEntity extends Entity {
                 this.readyToAttack = false
                 this.hitEntity = false
             }
-        } else {
+        } else {//if dead stop functioning and play death animation
             this.state = 5
             this.position.y += this.velocity.y
             this.spritesArr[this.state].position.x = this.position.x - this.spriteOffset.x
@@ -236,9 +255,9 @@ export class PlayerEntity extends Entity {
                 this.spritesArr[this.state].dontAnimate = true
                 this.spritesArr[this.state].frameCurrent = this.spritesArr[this.state].framesMax - 1
             }
-            if ((this.position.y + this.height + this.velocity.y) >= canvas.height - 60) 
+            if ((this.position.y + this.height + this.velocity.y) >= canvas.height - 60)
                 this.velocity.y = 0
-            else 
+            else
                 this.velocity.y += gravity
 
         }
@@ -247,11 +266,13 @@ export class PlayerEntity extends Entity {
 
     //Attack logic
     attack(delay) {
+        this.velocity.x = 0 //stop moving when attacking
         super.attack(delay)
     }
 
     //Player Movement logic
     playerMovement() {
+        //stop moving if no keys held
         if (!keys.a.pressed && !keys.d.pressed) {
             if (this.velocity.x > 0.5 || this.velocity.x < -0.5)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
@@ -259,22 +280,25 @@ export class PlayerEntity extends Entity {
                 this.velocity.x = 0
             this.isMoving = false
         }
+        //move left
         if (keys.a.pressed && lastKey == 'a' && this.velocity.x > -maxVelocity) {
             this.isMoving = true
             if (this.velocity.x > 1)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             this.velocity.x += acceleration * -1
-            this.hitDirOffset = 75
+            this.hitDirOffset = 1
 
         }
+        //move right
         else if (keys.d.pressed && lastKey == 'd' && this.velocity.x < maxVelocity) {
             this.isMoving = true
             if (this.velocity.x < -1)
                 this.velocity.x -= acceleration * 4 * Math.sign(this.velocity.x)
             this.velocity.x += acceleration
-            this.hitDirOffset = -25
+            this.hitDirOffset = -1
         }
 
+        //set animation state and flip sprite if necessary
         if (!this.readyToAttack && this.velocity.y == 0 && this.isMoving)
             this.state = 1
         for (let i = 0; i < this.spritesArr.length; i++)
@@ -295,15 +319,12 @@ export class EnemyEntity extends Entity {
     //Called every frame, visual representation of the entity
     draw() {
         super.draw()
-        if (this.isAttacking) {
-            //hitbox
-            context.fillStyle = 'blue'
-            context.fillRect(
-                this.hitbox.position.x,
-                this.hitbox.position.y,
-                this.hitbox.width,
-                this.hitbox.height)
-        }
+        /*context.fillStyle = 'blue'
+        context.fillRect(
+            this.hitbox.position.x,
+            this.hitbox.position.y,
+            this.hitbox.width,
+            this.hitbox.height)*/
     }
     //Called on initialization
     start() {
@@ -321,7 +342,7 @@ export class EnemyEntity extends Entity {
             if (this.velocity.y == 0 && !this.isMoving && !this.readyToAttack)
                 this.state = 0
             //Delay timer for enemy actions
-            if (this.actionTimer >= 30) {
+            if (this.actionTimer >= 40) {
                 let random = Math.floor(Math.random() * 2)
                 this.actionTimer = 0
 
@@ -340,6 +361,7 @@ export class EnemyEntity extends Entity {
                                 this.readyToAttack = true
                                 this.spritesArr[3].frameCurrent = 0
                                 this.state = 3
+
                             }
                             break
                     }
@@ -365,8 +387,9 @@ export class EnemyEntity extends Entity {
 
             //timer for attack cooldown
             if (this.readyToAttack) {
-                if (this.attackDelayTimer == 15)
-                    this.attack(150)
+                //if (this.attackDelayTimer == 15)
+                this.attack(150)
+                this.hitboxVelocity += 6
                 this.attackDelayTimer++
             }
 
@@ -377,13 +400,17 @@ export class EnemyEntity extends Entity {
                 this.hitEntity = false
                 this.attackDelayTimer = 0
                 this.readyToAttack = false
+                this.hitboxVelocity = 0
             }
 
             this.hitbox.position.y = this.position.y
-            if (player.velocity.y == 0)
-                this.hitbox.position.x = this.position.x - 175 *GetEntitySide(this, player)
+            //check if enemy sprite is flipped to determine hitbox position
+            if (!this.spritesArr[2].flipSprite)
+                this.hitbox.position.x = this.position.x - this.hitboxVelocity * -1// - 175 * -1
+            else
+                this.hitbox.position.x = this.position.x - this.hitboxVelocity//- 175
         }
-        else{
+        else {//if enemy is dead, play death anim and stop functioning
             this.state = 5
             this.spritesArr[this.state].position.x = this.position.x - this.spriteOffset.x
             this.spritesArr[this.state].position.y = this.position.y - this.spriteOffset.y
