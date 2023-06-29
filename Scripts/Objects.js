@@ -231,7 +231,7 @@ export class PlayerEntity extends Entity {
                 this.attackDelayTimer++
 
                 if (this.attackDelayTimer >= 15 && this.attackDelayTimer <= 50) {
-                    this.hitboxVelocity+= 2;
+                    this.hitboxVelocity+= 1.75;
                     this.attack(300)
                 }
                 if (this.attackDelayTimer >= 50) {
@@ -339,7 +339,7 @@ export class EnemyEntity extends Entity {
             this.actionTimer++
 
 
-            if (this.velocity.y == 0 && !this.isMoving && !this.readyToAttack)
+            if (this.velocity.y == 0 && !this.isMoving && !this.readyToAttack && !this.gotHit)
                 this.state = 0
             //Delay timer for enemy actions
             if (this.actionTimer >= 40) {
