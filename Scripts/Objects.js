@@ -440,11 +440,11 @@ export class EnemyEntity extends Entity {
 
         //Enemmy will move towards the player
         if (player.position.x > this.position.x) {
-            this.velocity.x += acceleration * 12
+            this.velocity.x = acceleration * 50
             this.isMoving = true
         }
         else if (player.position.x < this.position.x) {
-            this.velocity.x += acceleration * 12 * -1
+            this.velocity.x = acceleration * 50 * -1
             this.isMoving = true
         }
 
